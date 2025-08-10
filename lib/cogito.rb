@@ -1,56 +1,117 @@
 # frozen_string_literal: true
 
 require_relative "cogito/version"
+require "cli/ui"
 
 module Cogito
-  class Error < StandardError; end
+  class DoCommit
+    class Error < StandardError; end
 
-  VERSION = "0.1.0"
-  
-  TYPES = {
-    "feat" => "A new feature",
-    "fix" => "A bug fix",
-    "chore" => "Build process changes",
-    "docs" => "Documentation only",
-    "style" => "Code style changes",
-    "refactor" => "Refactor code",
-    "test" => "Add or correct tests"
+    VERSION = "0.1.0"
+
+    GREEN = "\e[32m"
+    YELLOW = "\e[33m"
+    BLUE = "\e[34m"
+    RED = "\e[31m"
+    RESET = "\e[0m"
+
+    DEFAULT_MESSAGE_LENGTH = 72
+    CONFIRM_COMMIT_MESSAGE = true
+    
+    DEFAULT_TYPES  = {
+      "feat" => "A new feature",
+      "fix" => "A bug fix",
+      "chore" => "Build process changes",
+      "docs" => "Documentation only",
+      "style" => "Code style changes",
+      "refactor" => "Refactor code",
+      "test" => "Add or correct tests"
+    }.freeze
+
+    DEFAULT_SCOPES = {
+      "ruby" => "Ruby code",
+      "JS" => "JS code",
+      "db" => "Database migrations",
+      "api" => "API changes",
+      "jobs" => "Jobs changes",
+      "spec" => "Add or correct specs",
   }.freeze
 
-  def self.run
-    puts "Select commit type:"
-    TYPES.each_with_index { |(key, desc), i| puts "#{i+1}. #{key} — #{desc}" }
+    def self.load_config
+      config_path = File.join(Dir.pwd, "cogito_config.yml")
 
-    type = nil
-    loop do
-      print "> "
-      input = gets.strip.to_i
-      if input.between?(1, TYPES.size)
-        type = TYPES.keys[input-1]
-        break
+      if File.exist?(config_path)
+        config = YAML.load_file(config_path)
+
+        types = config["types"] || DEFAULT_TYPES
+        scopes = config["scopes"] || DEFAULT_SCOPES
+        msg_length = 
+          config["message_length"] < DEFAULT_MESSAGE_LENGTH ? config["message_length"] : DEFAULT_MESSAGE_LENGTH
+        confirn_commit_message = config["confirm_commit_message"] || CONFIRM_COMMIT_MESSAGE
+
+        [types, scopes, msg_length - 1, confirn_commit_message]
       else
-        puts "Please enter a number between 1 and #{TYPES.size}"
+        [DEFAULT_TYPES, DEFAULT_SCOPES, DEFAULT_MESSAGE_LENGTH, CONFIRM_COMMIT_MESSAGE]
       end
     end
 
-    print "Scope (optional): "
-    scope = gets.strip
+    def self.run
+      types, scopes, msg_length, confirn_commit_message = load_config
 
-    print "Short description: "
-    desc = gets.strip
+      staged_files = `git diff --cached --name-only`.split("\n")
 
-    commit_msg = "#{type}#{scope.empty? ? '' : "(#{scope})"}: #{desc}"
+      if staged_files.empty?
+        puts "#{RED}\nNo files staged for commit.\n#{RESET}"
+        return
+      end
 
-    puts "\nYour commit message:"
-    puts commit_msg
+      CLI::UI::StdoutRouter.enable
+      type = nil
 
-    print "\nCommit now? (y/n): "
-    confirm = gets.strip.downcase
+      CLI::UI::Prompt.ask("#{YELLOW}Select commit type:#{RESET}") do |handler|
+        types.each do |type_key, type_desc|
+          handler.option("#{GREEN}#{type_key} — #{type_desc}#{RESET}") { type = type_key }
+        end
+      end
 
-    if confirm == 'y'
-      system("git commit -m \"#{commit_msg}\"")
-    else
-      puts "Aborted."
+      scope = nil
+
+      CLI::UI::Prompt.ask("#{YELLOW}Select scope:#{RESET}") do |handler|
+        scopes.each do |scope_key, scope_desc|
+          handler.option("#{GREEN}#{scope_key} — #{scope_desc}#{RESET}") { scope = scope_key }
+        end
+      end
+
+      print "#{YELLOW}Your commit message: #{RESET}"
+      message = gets.strip
+
+      commit_msg = "#{type}#{scope.empty? ? '' : "(#{scope})"}: #{message}"
+
+      if commit_msg.length > msg_length
+        puts "#{RED}\nError: Commit message exceeds #{msg_length} characters limit.\n#{RESET}"
+        puts "#{RED}\nYour full commit message: \n#{commit_msg}\n#{RESET}"
+      end
+
+      puts "#{YELLOW}\nFinal full commit message:#{RESET}"
+      puts "--------------------------------"
+      puts "\n#{BLUE}#{commit_msg[0..msg_length]}#{RESET}\n"
+      puts "--------------------------------"
+
+      confirm = true
+
+      if confirn_commit_message
+        CLI::UI::Prompt.ask("#{YELLOW}\nCommit with this message?#{RESET}") do |handler|
+          %w[yes no].each do |confirm_key, confirm_desc|
+            handler.option("#{GREEN}#{confirm_key}#{RESET}") { confirm = (confirm_key == 'yes') }
+          end
+        end
+      end
+
+      if confirm
+        system("git commit -m \"#{commit_msg}\"")
+      else
+        puts "#{RED}\nAborted.#{RESET}"
+      end
     end
   end
 end

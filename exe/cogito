@@ -2,4 +2,4 @@
 
 require "cogito"
 
-Cogito.run
+Cogito::DoCommit.run
