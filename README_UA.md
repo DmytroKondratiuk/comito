@@ -58,7 +58,7 @@ confirm_commit_message: false
 
 ## Приклад
 
-![Приклад](images/comito_result.png)
+<img src="images/comito_result.png" alt="Example" style="width:400px;">
 
 ## Ліцензія
 
