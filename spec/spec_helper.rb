@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+require "rspec"
+require "yaml"
+require "cli/ui"
+
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+  add_filter '/exe/'
+  track_files '{lib/**/*.rb}'
+end
+
+SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
+
 require "cogito"
 
 RSpec.configure do |config|

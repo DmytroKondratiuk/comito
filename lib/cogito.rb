@@ -7,8 +7,6 @@ module Cogito
   class DoCommit
     class Error < StandardError; end
 
-    VERSION = "0.1.0"
-
     GREEN = "\e[32m"
     YELLOW = "\e[33m"
     BLUE = "\e[34m"
@@ -47,9 +45,9 @@ module Cogito
         scopes = config["scopes"] || DEFAULT_SCOPES
         msg_length = 
           config["message_length"] < DEFAULT_MESSAGE_LENGTH ? config["message_length"] : DEFAULT_MESSAGE_LENGTH
-        confirn_commit_message = config["confirm_commit_message"] || CONFIRM_COMMIT_MESSAGE
+        confirm_commit_message = config.fetch("confirm_commit_message", CONFIRM_COMMIT_MESSAGE)
 
-        [types, scopes, msg_length - 1, confirn_commit_message]
+        [types, scopes, msg_length - 1, confirm_commit_message]
       else
         [DEFAULT_TYPES, DEFAULT_SCOPES, DEFAULT_MESSAGE_LENGTH, CONFIRM_COMMIT_MESSAGE]
       end
@@ -85,7 +83,7 @@ module Cogito
       print "#{YELLOW}Your commit message: #{RESET}"
       message = gets.strip
 
-      commit_msg = "#{type}#{scope.empty? ? '' : "(#{scope})"}: #{message}"
+      commit_msg = "#{type}#{scope.to_s.empty? ? '' : "(#{scope})"}: #{message}"
 
       if commit_msg.length > msg_length
         puts "#{RED}\nError: Commit message exceeds #{msg_length} characters limit.\n#{RESET}"
@@ -94,7 +92,7 @@ module Cogito
 
       puts "#{YELLOW}\nFinal full commit message:#{RESET}"
       puts "--------------------------------"
-      puts "\n#{BLUE}#{commit_msg[0..msg_length]}#{RESET}\n"
+      puts "\n#{BLUE}#{commit_msg[0..msg_length]}#{RESET}\n\n"
       puts "--------------------------------"
 
       confirm = true

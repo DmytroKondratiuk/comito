@@ -5,7 +5,7 @@ RSpec.describe Cogito do
     expect(Cogito::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  it "returns correct version number" do
+    expect(Cogito::VERSION).to eq("0.1.0")
   end
 end
