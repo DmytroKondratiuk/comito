@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require "cogito"
+require "comito"
 
-Cogito::DoCommit.run
+Comito::DoCommit.run

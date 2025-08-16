@@ -1,6 +1,6 @@
-# Cogito
+# Comito
 
-Cogito is a lightweight and intuitive Ruby CLI tool that provides an interactive interface for crafting commit messages following the **Conventional Commits** standard in Rails projects (and any Ruby-based project).
+Comito is a lightweight and intuitive Ruby CLI tool that provides an interactive interface for crafting commit messages following the **Conventional Commits** standard in Rails projects (and any Ruby-based project).
 
 ## Features 
 
@@ -12,29 +12,29 @@ Cogito is a lightweight and intuitive Ruby CLI tool that provides an interactive
 - 🎯 Perfect for Rails developers who want to standardize commit history.
 - ⚙️ Easy integration with CI/CD pipelines and Git hooks.
 
-## Why Cogito?
+## Why Comito?
 
 - ❌ No need for Node.js, Rust, or other external tools — 100% Ruby.
-- 🖥️ Simple to use — run `cogito` and follow the interactive generator.
+- 🖥️ Simple to use — run `comito` and follow the interactive generator.
 - 🔄 Flexible and extensible — easily adapted to your team’s workflow.
 - 📚 Keeps your commit history clean and consistent for better collaboration and release management.
 
 ## Installation
 
 ```bash
-gem install cogito
+gem install comito
 ```
 
 Or add it to your project’s Gemfile:
 
 ```bash
-gem "cogito"
+gem "comito"
 ```
 
 ## Usage
 
 ```bash
-cogito
+comito
 ```
 
 You’ll be guided through a series of prompts to build your commit message, with the option to confirm and commit directly.

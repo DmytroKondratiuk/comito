@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cogito (0.1.0)
+    comito (0.1.0)
       cli-ui (~> 2.4)
 
 GEM
@@ -35,7 +35,7 @@ PLATFORMS
   x86_64-darwin-24
 
 DEPENDENCIES
-  cogito!
+  comito!
   rake (~> 13.0)
   rspec (~> 3.0)
   simplecov

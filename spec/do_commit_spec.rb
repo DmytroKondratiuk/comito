@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "cogito"
+require "comito"
 
-RSpec.describe Cogito::DoCommit do
+RSpec.describe Comito::DoCommit do
   describe ".load_config" do
-    let(:config_path) { File.join(Dir.pwd, "cogito_config.yml") }
+    let(:config_path) { File.join(Dir.pwd, "comito_config.yml") }
 
     after do
       File.delete(config_path) if File.exist?(config_path)

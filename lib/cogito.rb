@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "cogito/version"
+require_relative "comito/version"
 require "cli/ui"
 
-module Cogito
+module Comito
   class DoCommit
     class Error < StandardError; end
 
@@ -36,7 +36,7 @@ module Cogito
   }.freeze
 
     def self.load_config
-      config_path = File.join(Dir.pwd, "cogito_config.yml")
+      config_path = File.join(Dir.pwd, "comito_config.yml")
 
       if File.exist?(config_path)
         config = YAML.load_file(config_path)

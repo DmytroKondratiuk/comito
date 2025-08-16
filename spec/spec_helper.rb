@@ -13,7 +13,7 @@ end
 
 SimpleCov.formatter = SimpleCov::Formatter::HTMLFormatter
 
-require "cogito"
+require "comito"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
