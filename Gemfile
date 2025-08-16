@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in cogito.gemspec
+# Specify your gem's dependencies in comito.gemspec
 gemspec
 
 gem "rake", "~> 13.0"
