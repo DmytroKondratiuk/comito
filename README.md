@@ -64,7 +64,7 @@ confirm_commit_message: false
 
 ## Example
 
-![Example](images/comito_result.png)
+<img src="images/comito_result.png" alt="Example" style="width:400px;">
 
 ## License
 
