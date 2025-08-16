@@ -1,31 +1,44 @@
 # Cogito
 
-TODO: Delete this and the text below, and describe your gem
+Cogito is a lightweight and intuitive Ruby CLI tool that provides an interactive interface for crafting commit messages following the **Conventional Commits** standard in Rails projects (and any Ruby-based project).
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/cogito`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Features 
+
+- 🚀 Interactive step-by-step interface to choose commit type (`feat`, `fix`, `chore`, `docs`, `style`, `refactor`, `test`, etc.).
+- 🏷️ Optional **scope** support for more precise commit descriptions.
+- 📝 Automatic commit message formatting according to the Conventional Commits standard.
+- 🔧 Option to directly commit via Git after generating the message.
+- 📦 Minimal dependencies — fully written in Ruby.
+- 🎯 Perfect for Rails developers who want to standardize commit history.
+- ⚙️ Easy integration with CI/CD pipelines and Git hooks.
+
+## Why Cogito?
+
+- ❌ No need for Node.js, Rust, or other external tools — 100% Ruby.
+- 🖥️ Simple to use — run `cogito` and follow the interactive generator.
+- 🔄 Flexible and extensible — easily adapted to your team’s workflow.
+- 📚 Keeps your commit history clean and consistent for better collaboration and release management.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
+```bash
+gem install cogito
+```
 
-Install the gem and add to the application's Gemfile by executing:
+Or add it to your project’s Gemfile:
 
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+```bash
+gem "cogito"
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+```bash
+cogito
+```
 
-## Development
+You’ll be guided through a series of prompts to build your commit message, with the option to confirm and commit directly.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+## Usage
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/cogito.
+Apache-2.0
