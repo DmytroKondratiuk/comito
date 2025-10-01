@@ -38,6 +38,12 @@ RSpec.describe Comito::DoCommit do
   end
 
   describe ".run" do
+    let(:prompt) { instance_double(TTY::Prompt) }
+
+    before do
+      allow(TTY::Prompt).to receive(:new).and_return(prompt)
+    end
+
     context "when not confirming commit message" do
       before do
         allow(described_class).to receive(:load_config).and_return(
@@ -65,28 +71,14 @@ RSpec.describe Comito::DoCommit do
             .and_return("file.rb\n")
         )
         
-        allow(CLI::UI::Prompt).to receive(:ask).with(/commit type/) do |_, &block|
-          handler = double
-          allow(handler).to receive(:option) do |text, &option_block|
-            option_block.call if text.include?("feat")
-          end
-          block.call(handler)
-        end
-
-        allow(CLI::UI::Prompt).to receive(:ask).with(/scope/) do |_, &block|
-          handler = double
-          allow(handler).to receive(:option) do |text, &option_block|
-            option_block.call if text.include?("app")
-          end
-          block.call(handler)
-        end
+        allow(prompt).to receive(:select).with(/commit type/).and_return("feat")
+        allow(prompt).to receive(:select).with(/scope/).and_return("ruby")
+        allow(prompt).to receive(:ask)
+          .with(/Your commit message:/, default: "")
+          .and_return("Added feature")
         
-        allow_any_instance_of(Object).to(
-          receive(:gets).and_return("Added feature\n")
-        )
-
         expect(described_class).to(
-          receive(:system).with("git commit -m \"feat(app): Added feature\"")
+          receive(:system).with("git commit -m \"feat(ruby): Added feature\"")
         )
 
         described_class.run
@@ -98,12 +90,13 @@ RSpec.describe Comito::DoCommit do
             .with("git diff --cached --name-only")
             .and_return("file.rb\n")
         )
-        allow(CLI::UI::Prompt).to receive(:ask).and_yield(double(option: nil))
-        allow_any_instance_of(Object).to receive(:gets).and_return("A" * 100)
+        allow(prompt).to receive(:select).with(/commit type/).and_return("feat")
+        allow(prompt).to receive(:select).with(/scope/).and_return("ruby")
+        allow(prompt).to receive(:ask).with(/Your commit message:/, default: "").and_return("A" * 100)
 
         expect { described_class.run }.to output(/exceeds/).to_stdout
       end
-  end
+    end
 
     context "when confirming commit message" do
       before do
@@ -118,64 +111,26 @@ RSpec.describe Comito::DoCommit do
         )
       end
 
-    it "executes git commit when user confirms 'yes'" do
-      allow(CLI::UI::Prompt).to receive(:ask).with(/commit type/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("feat")
-        end
-        block.call(handler)
+      it "executes git commit when user confirms 'yes'" do
+        allow(prompt).to receive(:select).with(/commit type/).and_return("feat")
+        allow(prompt).to receive(:select).with(/scope/).and_return("ruby")
+        allow(prompt).to receive(:ask).with(/Your commit message:/, default: "").and_return("Added feature")
+        allow(prompt).to receive(:yes?).with(/Commit with this message\?/).and_return(true)
+
+        expect(described_class).to receive(:system).with(/git commit -m/)
+
+        described_class.run
       end
 
-      allow(CLI::UI::Prompt).to receive(:ask).with(/scope/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("app")
-        end
-        block.call(handler)
+      it "aborts commit when user selects 'no'" do
+        allow(prompt).to receive(:select).with(/commit type/).and_return("feat")
+        allow(prompt).to receive(:select).with(/scope/).and_return("ruby")
+        allow(prompt).to receive(:ask).with(/Your commit message:/, default: "").and_return("Added feature")
+        allow(prompt).to receive(:yes?).with(/Commit with this message\?/).and_return(false)
+
+        expect(described_class).not_to receive(:system)
+        expect { described_class.run }.to output(/Aborted/).to_stdout
       end
-
-      allow(CLI::UI::Prompt).to receive(:ask).with(/Commit with/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("yes")
-        end
-        block.call(handler)
-      end
-
-      expect(described_class).to receive(:system).with(/git commit -m/)
-
-      described_class.run
-    end
-
-    it "aborts commit when user selects 'no'" do
-      allow(CLI::UI::Prompt).to receive(:ask).with(/commit type/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("feat")
-        end
-        block.call(handler)
-      end
-
-      allow(CLI::UI::Prompt).to receive(:ask).with(/scope/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("app")
-        end
-        block.call(handler)
-      end
-
-      allow(CLI::UI::Prompt).to receive(:ask).with(/Commit with/) do |_, &block|
-        handler = double
-        allow(handler).to receive(:option) do |text, &option_block|
-          option_block.call if text.include?("no")
-        end
-        block.call(handler)
-      end
-
-      expect(described_class).not_to receive(:system)
-      expect { described_class.run }.to output(/Aborted/).to_stdout
-    end
     end
   end
 end

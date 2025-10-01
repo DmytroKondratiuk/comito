@@ -6,6 +6,6 @@ RSpec.describe Comito do
   end
 
   it "returns correct version number" do
-    expect(Comito::VERSION).to eq("0.1.0")
+    expect(Comito::VERSION).to eq("0.1.1")
   end
 end
