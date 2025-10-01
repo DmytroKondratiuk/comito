@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "comito/version"
-require "cli/ui"
+require "tty-prompt"
 
 module Comito
   class DoCommit
@@ -63,25 +63,21 @@ module Comito
         return
       end
 
-      CLI::UI::StdoutRouter.enable
-      type = nil
+      prompt = TTY::Prompt.new
 
-      CLI::UI::Prompt.ask("#{YELLOW}Select commit type:#{RESET}") do |handler|
-        types.each do |type_key, type_desc|
-          handler.option("#{GREEN}#{type_key} — #{type_desc}#{RESET}") { type = type_key }
+      type = prompt.select("#{YELLOW}Select commit type:#{RESET}") do |menu|
+        types.each do |key, desc|
+          menu.choice("#{GREEN}#{key} — #{desc}#{RESET}", key)
         end
       end
 
-      scope = nil
-
-      CLI::UI::Prompt.ask("#{YELLOW}Select scope:#{RESET}") do |handler|
-        scopes.each do |scope_key, scope_desc|
-          handler.option("#{GREEN}#{scope_key} — #{scope_desc}#{RESET}") { scope = scope_key }
+      scope = prompt.select("#{YELLOW}Select scope:#{RESET}") do |menu|
+        scopes.each do |key, desc|
+          menu.choice("#{GREEN}#{key} — #{desc}#{RESET}", key)
         end
       end
 
-      print "#{YELLOW}Your commit message: #{RESET}"
-      message = gets.strip
+      message = prompt.ask("#{YELLOW}Your commit message:#{RESET}", default: "")
 
       commit_msg = "#{type}#{scope.to_s.empty? ? '' : "(#{scope})"}: #{message}"
 
@@ -98,11 +94,7 @@ module Comito
       confirm = true
 
       if confirn_commit_message
-        CLI::UI::Prompt.ask("#{YELLOW}\nCommit with this message?#{RESET}") do |handler|
-          %w[yes no].each do |confirm_key, confirm_desc|
-            handler.option("#{GREEN}#{confirm_key}#{RESET}") { confirm = (confirm_key == 'yes') }
-          end
-        end
+        confirm = prompt.yes?("#{YELLOW}Commit with this message?#{RESET}")
       end
 
       if confirm

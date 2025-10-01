@@ -2,7 +2,7 @@
 
 require "rspec"
 require "yaml"
-require "cli/ui"
+require "tty-prompt"
 
 require 'simplecov'
 SimpleCov.start do
